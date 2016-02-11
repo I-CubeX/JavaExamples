@@ -3,7 +3,7 @@
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: Java Examples
- * FILENAME      :  I2CWiiMotionPlusExample.java  
+ * FILENAME      :  I2CWiiMotionPlusExample.java -> I2CExample.java 
  * 
  * This file is part of the Pi4J project. More information about 
  * this project can be found here:  http://www.pi4j.com/
@@ -27,6 +27,8 @@
  * #L%
  */
 
+//modified to talk to I-CubeX orient3d sensor
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,7 +40,7 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
 
-public class I2CWiiMotionPlusExample {
+public class I2CExample {
 
     /**
      * @param args

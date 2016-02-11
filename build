@@ -1,1 +1,5 @@
+echo "building SpiExample.java"
 javac -classpath .:classes:/opt/pi4j/lib/'*' -d . SpiExample.java
+
+echo "building I2CExample.java"
+javac -classpath .:classes:/opt/pi4j/lib/'*' -d . I2CExample.java
