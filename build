@@ -1,0 +1,1 @@
+javac -classpath .:classes:/opt/pi4j/lib/'*' -d . SpiExample.java
