@@ -3,7 +3,7 @@
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: Java Examples
- * FILENAME      :  I2CWiiMotionPlusExample.java -> I2CExample.java 
+ * FILENAME      :  I2COrient3DExample.java -> I2CExample.java 
  * 
  * This file is part of the Pi4J project. More information about 
  * this project can be found here:  http://www.pi4j.com/
@@ -51,8 +51,8 @@ public class I2CExample {
         // get I2C bus instance
         final I2CBus bus = I2CFactory.getInstance(I2CBus.BUS_1);
         
-        WiiMotionPlus wiiMotionPlus = new WiiMotionPlus(bus);
-        wiiMotionPlus.init();
+        Orient3D Orient3D = new Orient3D(bus);
+        Orient3D.init();
         
         int iteration = 0;
         
@@ -65,7 +65,7 @@ public class I2CExample {
         try {
             while (true) {
                 long now = System.currentTimeMillis();
-                ThreeAxis threeAxis = wiiMotionPlus.read();
+                OrientData OrientData = Orient3D.read();
                 long lasted = System.currentTimeMillis() - now;
                 
                 System.out.print(formatInt(iteration));
@@ -74,19 +74,19 @@ public class I2CExample {
                 System.out.print(formatLong(lasted));
                 System.out.print(' ');
                 
-                System.out.print(formatInt(threeAxis.x));
+                System.out.print(formatInt(OrientData.bearing));
                 System.out.print(' ');
     
-                System.out.print(formatInt(threeAxis.y));
+                System.out.print(formatInt(OrientData.pitch));
                 System.out.print(' ');
     
-                System.out.print(formatInt(threeAxis.z));
+                System.out.print(formatInt(OrientData.roll));
                 System.out.print(' ');
     
                 // System.out.print('\r');
                 System.out.println();
                 
-                log.println(formatInt(iteration) + "," + formatLong(lasted) + "," + formatInt(threeAxis.x) + "," + formatInt(threeAxis.y) + "," + formatInt(threeAxis.z));
+                log.println(formatInt(iteration) + "," + formatLong(lasted) + "," + formatInt(OrientData.bearing) + "," + formatInt(OrientData.pitch) + "," + formatInt(OrientData.roll));
                 //log.flush();
                 
                 Thread.sleep(500);
@@ -128,41 +128,28 @@ public class I2CExample {
         return x;
     }
     
-    public static class WiiMotionPlus {
+    public static class Orient3D {
         
-        private I2CDevice initDevice;
         private I2CDevice device;
         
-        public WiiMotionPlus(I2CBus bus) throws IOException {
-            initDevice = bus.getDevice(0x53);
-            device = bus.getDevice(0x52);
+        public Orient3D(I2CBus bus) throws IOException {
+            device = bus.getDevice(0x60); //address of the orient3d
         }
         
         public void init() {
-            try {
-                initDevice.write(0xfe, (byte)0x04);
-            } catch (IOException ignore) {
-                ignore.printStackTrace();
-            }
         }
         
-        public ThreeAxis read() throws IOException {
+        public OrientData read() throws IOException {
             byte[] buf = new byte[256];
-            int res = device.read(0, buf, 0, 6);
-
-            if (res != 6) {
-                throw new RuntimeException("Read failure - got only " + res + " bytes from WiiMotionPlus");
-            }
+            int bear = device.read(0x01);
+            int pitch = device.read(0x05);
+            int roll = device.read(0x06);
 
             
-            ThreeAxis ret = new ThreeAxis();
-            
-            ret.x = asInt(buf[0]);
-            ret.y = asInt(buf[1]);
-            ret.z = asInt(buf[2]);
-            ret.x = ret.x | (((asInt(buf[3]) & 0xfc) >> 2) * 256);
-            ret.y = ret.y | (((asInt(buf[4]) & 0xfc) >> 2) * 256);
-            ret.z = ret.z | (((asInt(buf[5]) & 0xfc) >> 2) * 256);
+            OrientData ret = new OrientData();
+            ret.bearing = bear;
+            ret.pitch = pitch;
+            ret.roll = roll;
 
             return ret;
         }
@@ -175,10 +162,10 @@ public class I2CExample {
     
     }
     
-    public static class ThreeAxis {
+    public static class OrientData {
         
-        public int x;
-        public int y;
-        public int z;
+        public int bearing;
+        public int pitch;
+        public int roll;
     }    
 }
